@@ -8,7 +8,7 @@
 
 A wireless, offline-first IoT diagnostic platform for commercial beverage dispensers. Three sensor nodes transmit real-time telemetry over LoRa radio to a Raspberry Pi 5 gateway, where data is stored in InfluxDB and visualized through a Grafana dashboard — no internet or Wi-Fi required at the venue.
 
-Built as a senior capstone for a real industry client, Multiplex Beverage, addressing the lack of real-time visibility into machine health across restaurant, stadium, and retail deployments.
+Built as a senior capstone for a real industry client, addressing the lack of real-time visibility into machine health across restaurant, stadium, and retail deployments.
 
 ---
 
