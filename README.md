@@ -26,6 +26,8 @@ Those sketches live in `firmware/dev/HelloWorld_Sender/` and `firmware/dev/Hello
 
 ## System Architecture
 
+![System Architecture](docs/images/system-architecture.png)
+
 ```
 [Dispenser Node]     [Chiller Node]     [Booster Node]
  Heltec LoRa32 V3    Heltec LoRa32 V3   Heltec LoRa32 V3

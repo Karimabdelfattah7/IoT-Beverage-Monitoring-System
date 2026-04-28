@@ -1,0 +1,326 @@
+/**
+ * Booster Dashboard Styles
+ *
+ * This stylesheet defines the layout, visual design, and responsive behavior
+ * for the Booster subsystem dashboard. It includes styles for summary cards,
+ * activity indicators, charts, tooltips, and control elements.
+ *
+ * Key Features:
+ * - Grid-based layout for summary metrics and charts
+ * - Status-based color coding (good, warning, critical) for system conditions
+ * - Reusable card components for consistent UI design
+ * - Progress indicators for activity visualization
+ * - Responsive design using media queries for different screen sizes
+ *
+ * The styling focuses on readability, clear data representation, and a
+ * modern dark-themed interface suitable for real-time monitoring systems.
+ */
+
+.booster-root {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 22px;
+  }
+  
+  .booster-range-note {
+    color: #9fb0cb;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: -2px;
+  }
+  
+  .booster-loading-card {
+    background: linear-gradient(180deg, #11213f 0%, #09162d 100%);
+    border: 1px solid rgba(140, 170, 255, 0.12);
+    border-radius: 24px;
+    padding: 28px;
+    color: #f5f8ff;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+  }
+  
+  .booster-summary-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 18px;
+  }
+  
+  .booster-summary-card,
+  .booster-chart-card {
+    background: linear-gradient(180deg, #11213f 0%, #09162d 100%);
+    border: 1px solid rgba(140, 170, 255, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+  }
+  
+  .booster-summary-card {
+    min-height: 200px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .booster-summary-label {
+    color: #9fb0cb;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  
+  .booster-summary-value {
+    color: #f5f8ff;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+  
+  .booster-summary-sublabel {
+    margin-top: 10px;
+    color: #9fb0cb;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .booster-summary-good .booster-summary-value,
+  .booster-summary-good .booster-status-value {
+    color: #b8ffd7;
+  }
+  
+  .booster-summary-warning .booster-summary-value,
+  .booster-summary-warning .booster-status-value {
+    color: #ffd27b;
+  }
+  
+  .booster-summary-critical .booster-summary-value,
+  .booster-summary-critical .booster-status-value {
+    color: #ffb7c0;
+  }
+  
+  .booster-summary-neutral .booster-summary-value,
+  .booster-summary-neutral .booster-status-value {
+    color: #f5f8ff;
+  }
+  
+  .booster-status-value {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #f5f8ff;
+  }
+  
+  .booster-activity-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .booster-activity-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .booster-activity-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  
+  .booster-activity-title {
+    color: #9fb0cb;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  
+  .booster-activity-value {
+    color: #f5f8ff;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  
+  .booster-activity-progress {
+    width: 100%;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .booster-activity-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  
+  .booster-activity-progress-fill-good {
+    background: linear-gradient(90deg, #2fd38b 0%, #7bf0bb 100%);
+  }
+  
+  .booster-activity-progress-fill-warning {
+    background: linear-gradient(90deg, #ffb43b 0%, #ffd27b 100%);
+  }
+  
+  .booster-activity-progress-fill-critical {
+    background: linear-gradient(90deg, #ff5a6a 0%, #ff9aa6 100%);
+  }
+  
+  .booster-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .booster-info-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .booster-info-item span {
+    color: #9fb0cb;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  
+  .booster-info-item strong {
+    color: #f5f8ff;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  
+  .booster-chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  
+  .booster-chart-card {
+    min-height: 388px;
+    padding: 18px;
+  }
+  
+  .booster-chart-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .booster-chart-card-header h3 {
+    margin: 0;
+    color: #f5f8ff;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  
+  .booster-chart-card-body {
+    width: 100%;
+    height: 240px;
+  }
+  
+  .booster-chart-stats-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  
+  .booster-stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  .booster-stat-pill-label {
+    color: #9fb0cb;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  
+  .booster-stat-pill-value {
+    color: #f5f8ff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  
+  .booster-tooltip {
+    background: rgba(8, 16, 31, 0.96);
+    border: 1px solid rgba(140, 170, 255, 0.14);
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+  }
+  
+  .booster-tooltip-time {
+    color: #f5f8ff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  
+  .booster-tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    font-size: 12px;
+  }
+
+  .booster-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .booster-range-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .booster-range-label {
+    color: #9fb0cb;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  
+  .booster-range-select {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f5f8ff;
+    border: 1px solid rgba(140, 170, 255, 0.16);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font: inherit;
+  }
+  
+  @media (max-width: 1200px) {
+    .booster-summary-grid,
+    .booster-chart-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  @media (max-width: 760px) {
+    .booster-summary-grid,
+    .booster-chart-grid {
+      grid-template-columns: 1fr;
+    }
+  }
