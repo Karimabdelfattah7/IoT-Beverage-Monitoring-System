@@ -1,0 +1,259 @@
+/**
+ * Chiller Dashboard Styles
+ *
+ * This stylesheet defines the layout and visual styling for the Chiller
+ * subsystem dashboard. It controls the top summary section, time range selector,
+ * temperature status cards, chart containers, recent readings table, and
+ * diagnostic summary panels.
+ *
+ * Key Features:
+ * - Dark monitoring-dashboard theme consistent with the rest of the system
+ * - Status-based color coding for stable, warning, and critical chiller states
+ * - Grid layouts for summary cards, charts, and lower diagnostic panels
+ * - Fixed chart container sizing to support Recharts rendering
+ * - Responsive behavior for smaller screens and stacked layouts
+ *
+ * The design focuses on making chiller temperature and ambient readings easy
+ * to interpret for both high-level monitoring and technical diagnostics.
+ */
+
+.chiller-root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------------- TOP BAR ---------------- */
+
+.chiller-topbar,
+.chiller-chart-card,
+.chiller-panel-card,
+.chiller-summary-card {
+  background: linear-gradient(180deg, rgba(17, 33, 63, 1) 0%, rgba(9, 22, 45, 1) 100%);
+  border: 1px solid rgba(140, 170, 255, 0.12);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+}
+
+.chiller-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 22px 24px;
+}
+
+.chiller-title {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -0.04em;
+}
+
+.chiller-subtitle {
+  margin: 12px 0 0 0;
+  color: var(--text-soft);
+  line-height: 1.6;
+  max-width: 760px;
+}
+
+/* ---------------- RANGE ---------------- */
+
+.chiller-range-wrap {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chiller-range-label {
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.chiller-range-select {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+/* ---------------- SUMMARY ---------------- */
+
+.chiller-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.chiller-summary-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chiller-summary-label {
+  display: block;
+  color: var(--text-soft);
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.chiller-summary-card strong {
+  display: block;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.chiller-summary-note {
+  display: block;
+  margin-top: 10px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* STATUS COLORS */
+
+.chiller-summary-good strong {
+  color: #b8ffd7;
+}
+
+.chiller-summary-warning strong {
+  color: #ffd27b;
+}
+
+.chiller-summary-critical strong {
+  color: #ffb7c0;
+}
+
+.chiller-summary-neutral strong {
+  color: var(--text-main);
+}
+
+/* ---------------- MINI METRICS ---------------- */
+
+.chiller-mini-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.chiller-mini-metrics span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.chiller-mini-metrics strong {
+  font-size: 18px;
+}
+
+/* ---------------- CHARTS ---------------- */
+
+.chiller-chart-card {
+  padding: 22px;
+}
+
+.chiller-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.chiller-chart-header h3 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+
+.chiller-chart-header span {
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.chiller-chart-body {
+  width: 100%;
+  height: 320px;
+  min-height: 320px;
+}
+
+/* ---------------- LOWER GRID ---------------- */
+
+.chiller-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+}
+
+.chiller-panel-card {
+  padding: 22px;
+}
+
+.chiller-panel-card h3 {
+  margin: 0 0 18px 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+
+/* ---------------- TABLE ---------------- */
+
+.chiller-reading-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chiller-reading-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chiller-reading-row span {
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+.chiller-reading-row strong {
+  font-size: 16px;
+}
+
+/* ---------------- NOTES ---------------- */
+
+.chiller-note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chiller-note-item {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media (max-width: 1100px) {
+  .chiller-summary-grid,
+  .chiller-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chiller-topbar {
+    flex-direction: column;
+  }
+}

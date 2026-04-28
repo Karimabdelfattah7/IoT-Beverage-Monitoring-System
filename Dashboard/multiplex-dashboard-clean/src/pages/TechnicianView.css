@@ -1,0 +1,15 @@
+/**
+ * Technician Layout Styles
+ *
+ * This stylesheet defines the content container for the Technician view.
+ * It ensures that all technician dashboard sections take the full available
+ * width and stack cleanly within the page layout.
+ */
+
+.technician-content-area {
+    display: block;
+  }
+  
+  .technician-content-area > * {
+    width: 100%;
+  }
