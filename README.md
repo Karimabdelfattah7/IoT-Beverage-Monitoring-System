@@ -2,7 +2,7 @@
 
 > **University of Louisville — CSE 596 Capstone Project (Spring 2026)**
 > Industry Partner: **Multiplex Beverage**
-> Team: Alexander Lain · Roxana Perez Gonzalez · Karim Abdelfattah · Nathan Coffee · Sanjana Nimmala · Robert Meyer
+> Team: Alexander Lain · Roxana Perez Gonzalez · Karim Abdelfattah · Nathan Coffee · Robert Meyer
 
 ---
 
@@ -289,7 +289,7 @@ Target board: **Heltec WiFi LoRa 32 V3**
 
 ## Team
 
-Alexander Lain · Roxana Perez Gonzalez · **Karim Abdelfattah** · Nathan Coffee · Sanjana Nimmala · Robert Meyer
+Alexander Lain · Roxana Perez Gonzalez · **Karim Abdelfattah** · Nathan Coffee · Robert Meyer
 
 University of Louisville, J.B. Speed School of Engineering — CSE 596 Capstone, Spring 2026
 
