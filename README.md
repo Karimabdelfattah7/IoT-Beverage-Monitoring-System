@@ -3,6 +3,8 @@
 > **University of Louisville — CSE 596 Capstone Project (Spring 2026)**
 > Industry Partner: **Multiplex Beverage**
 > Team: Alexander Lain · Roxana Perez Gonzalez · Karim Abdelfattah · Nathan Coffee · Robert Meyer
+>
+> 🏆 **1st Place — UofL Engineering Design & Innovation Showcase 2026**
 
 ---
 
@@ -20,7 +22,7 @@ Before writing any sensor code, the first milestone was confirming that two **He
 
 This was done using the factory pingpong example from Heltec, then split into dedicated sender and receiver sketches. One board transmitted a `HelloWorld_<seq>` packet every few seconds; the other received it and displayed the message on its onboard OLED along with RSSI and SNR. Once both OLEDs were showing the correct packets in real time, the radio link was confirmed.
 
-Those sketches live in `firmware/dev/HelloWorld_Sender/` and `firmware/dev/HelloWorld_Receiver/`. They were the foundation everything else was built on.
+Those early development sketches are not included in this repository, but they were the foundation everything else was built on.
 
 ---
 
@@ -81,101 +83,82 @@ All communication is **star topology** — every node transmits directly to the 
 ## Repository Structure
 
 ```
-iot-beverage-monitoring-system/
+IoT-Beverage-Monitoring-System/
 |
-|-- firmware/                              # Arduino sketches for all three nodes
-|   |-- chillerTransmitter/
-|   |   |-- chillerTransmitter.ino         # Chiller Node: MCP9600 temp + LoRa TX
-|   |
+|-- firmware/                                # Arduino sketches (Heltec WiFi LoRa 32 V3)
 |   |-- DispenserTransmissionTest1/
-|   |   |-- DispenserTransmissionTest1.ino # Dispenser Node: button + volume + LoRa TX
-|   |
-|   |-- dev/                               # Development and test sketches
-|       |-- HelloWorld_Sender/             # LoRa pingpong TX (first proof of radio link)
-|       |-- HelloWorld_Receiver/           # LoRa pingpong RX
-|       |-- Dispenser_button_test1/        # Qwiic Button I2C detection on GPIO 41/42
-|       |-- Dispenser_button_test2/        # Press duration timing
-|       |-- Dispenser_button_test3/        # Flow rate volume calculations
+|   |   |-- DispenserTransmissionTest1.ino   # Dispenser Node: button timing + volume + LoRa TX
+|   |-- BoosterTransmission/
+|   |   |-- BoosterTransmission.ino          # Booster Node: ACS723 current/power + LoRa TX
+|   |-- chillerTransmitter/
+|       |-- chillerTransmitter.ino           # Chiller Node: MCP9600 temperature + LoRa TX
 |
-|-- pi-gateway/                            # Python scripts running on the Raspberry Pi
-|   |-- chillerReceiver.py                 # Bare-bones LoRa receiver, prints to stdout
-|   |-- LoRaReceiver_InfluxSender.py       # Receiver + InfluxDB writer (v1)
-|   |-- LoRaReceiver_InfluxSender_Updated.py  # Receiver + InfluxDB writer (v2, active)
-|   |-- delete_measurement.py             # Dev utility: wipe a measurement from InfluxDB
-|   |-- README.md                          # Pi gateway setup and usage details
+|-- pi-gateway/
+|   |-- LoRaReceiver_InfluxSender.py         # Raspberry Pi 4 LoRa receiver + InfluxDB writer
 |
-|-- README.md                              # This file
+|-- dashboard/                               # React dashboard + Node.js/Express API
+|   |-- server/server.js                     # REST API that queries InfluxDB
+|   |-- src/                                 # React app (Manager View + Technical View)
+|   |-- README.md                            # Dashboard setup
+|
+|-- docs/images/system-architecture.png
+|-- README.md
 ```
 
 ---
 
 ## Firmware — Node Sketches Explained
 
-### `firmware/dev/HelloWorld_Sender` and `HelloWorld_Receiver`
+### Development milestones
 
-The starting point. These sketches use the Heltec LoRaWAN stack to send and receive a simple `HelloWorld_<seq>` string. The sender increments a counter each transmission; the receiver displays the packet on its OLED with RSSI and SNR. Used to confirm the radio link was working between two boards before any sensor code was added.
+Before the production sketches below, the dispenser logic was built up in small test sketches (not included in this repository):
 
-### `firmware/dev/Dispenser_button_test1`
-
-Focused on getting the **SparkFun Qwiic Button** talking to the Heltec V3. Because the V3's OLED uses the internal I2C bus, a second I2C bus was created on GPIO 41 (SDA) and GPIO 42 (SCL) using `TwoWire(1)`. This sketch confirms the button appears on that bus at address `0x6F` and counts presses.
-
-### `firmware/dev/Dispenser_button_test2`
-
-Adds timing. On each button press, `millis()` records the start time. On release, press duration is computed and accumulated. Output shows per-press duration and total cumulative press time.
-
-### `firmware/dev/Dispenser_button_test3`
-
-Adds volume calculations using the flow rate constants provided by Multiplex Beverage:
-- Syrup: 0.5 oz/sec (0.0005 oz/ms)
-- Water: 2.5 oz/sec (0.0025 oz/ms)
-- Total drink: 3.0 oz/sec (0.0030 oz/ms)
-
-Each press duration is converted to ounces of syrup, water, and total drink dispensed. Cumulative totals are tracked across all presses.
+1. **Qwiic Button detection.** Because the Heltec V3's OLED uses the internal I2C bus, a second I2C bus was created on GPIO 41 (SDA) and GPIO 42 (SCL) using `TwoWire(1)`, and the SparkFun Qwiic Button was confirmed at address `0x6F`.
+2. **Press timing.** `millis()` records press start and release to compute each press duration and a cumulative total.
+3. **Volume estimation.** Press duration is converted to ounces using the flow rates provided by Multiplex Beverage:
+   - Syrup: 0.5 oz/sec (0.0005 oz/ms)
+   - Water: 2.5 oz/sec (0.0025 oz/ms)
+   - Total drink: 3.0 oz/sec (0.0030 oz/ms)
 
 ### `firmware/DispenserTransmissionTest1/DispenserTransmissionTest1.ino`
 
-Production dispenser firmware. Combines the button timing and volume math from the dev sketches, then transmits a structured LoRa payload using **RadioLib** on button release. The packet is prefixed with `D:` so the Pi gateway can identify it as a dispenser packet.
+Production dispenser firmware. Combines the button timing and volume math, then transmits a structured LoRa payload using **RadioLib** on button release. The packet is prefixed with `D,` so the Pi gateway can identify it as a dispenser packet.
 
-Example transmitted packet:
 ```
-D:count=3,duration=1240,syrup=0.620,water=3.100,total=3.720
+D,count=3,duration=1240i,syrup=0.620,water=3.100,total=3.720
+```
+
+### `firmware/BoosterTransmission/BoosterTransmission.ino`
+
+Production booster firmware. Samples an **ACS723** current sensor on the pump circuit (with a zero-current calibration at startup), derives power from a 12 V supply, and transmits over LoRa using RadioLib. Prefixed with `B,`.
+
+```
+B,count=104,current=1.820,power=21.840,temp=22.10,pressure=0.00
 ```
 
 ### `firmware/chillerTransmitter/chillerTransmitter.ino`
 
-Production chiller firmware. Reads from an **Adafruit MCP9600** thermocouple amplifier over I2C (same GPIO 41/42 second bus as the dispenser button). Takes a 5-sample average with 50ms spacing to smooth thermocouple noise, then transmits over LoRa using RadioLib. Prefixed with `C:`.
+Production chiller firmware. Reads from an **Adafruit MCP9600** thermocouple amplifier over I2C (same GPIO 41/42 second bus). Takes a 5-sample average with 50 ms spacing to smooth thermocouple noise, then transmits over LoRa using RadioLib. Prefixed with `C,`.
 
-Example transmitted packet:
 ```
-C:temp=4.23,ambient=22.15,count=7
+C,count=7,temp=4.23,ambient=22.15
 ```
 
-> **Note on RadioLib vs Heltec stack:** The dev sketches use the Heltec LoRaWAN library (`LoRaWan_APP.h`). Production firmware migrated to **RadioLib** because it gives direct LoRa packet control without the overhead or session requirements of LoRaWAN. The Pi gateway also communicates via raw LoRa packets, not LoRaWAN, which is why they are compatible.
+> **Note on RadioLib vs Heltec stack:** Early test sketches used the Heltec LoRaWAN library (`LoRaWan_APP.h`). Production firmware migrated to **RadioLib** because it gives direct LoRa packet control without the overhead or session requirements of LoRaWAN. The Pi gateway also communicates via raw LoRa packets, not LoRaWAN, which is why they are compatible.
 
 ---
 
-## Pi Gateway — Scripts Explained
+## Pi Gateway
 
-All Pi gateway scripts live in `pi-gateway/`. They communicate with the SX1262 LoRa HAT via direct SPI using `spidev` and `lgpio`.
+### `pi-gateway/LoRaReceiver_InfluxSender.py`
 
-### `pi-gateway/chillerReceiver.py`
+Runs on the Raspberry Pi 4 and talks to the SX1262 LoRa HAT over direct SPI using `spidev` and `lgpio`. When a packet arrives, the prefix identifies the node:
 
-The first script used on the Pi. It does one thing: listen for LoRa packets and print them to stdout. No database, no routing — just raw packet reception. Used to verify the Pi's radio HAT was working before adding any data pipeline.
+- `C,` → `chiller_v2`
+- `B,` → `booster_v2`
+- `D,` → `dispenser_v2` (also queries InfluxDB with Flux for the last syrup level and appends `syrupRemaining`)
 
-### `pi-gateway/LoRaReceiver_InfluxSender.py` (v1)
-
-Builds on `chillerReceiver.py` by adding InfluxDB writes. When a packet arrives, it reads the first character to determine which node sent it:
-- `C` → writes to `chiller_node_table`
-- `B` → writes to `booster_node_table`
-- `D` → writes to `dispenser_node_table`
-
-### `pi-gateway/LoRaReceiver_InfluxSender_Updated.py` (v2 — active)
-
-The version currently in use. Passes payloads directly as InfluxDB line protocol field syntax so each metric is stored as a native typed field. Also adds syrup remaining tracking for the Dispenser Node via a Flux query back to InfluxDB after each dispense event.
-
-### `pi-gateway/delete_measurement.py`
-
-A one-shot utility to wipe all records from a specific InfluxDB measurement. Used during development to clear test data between runs.
+Payloads are written directly as InfluxDB line protocol fields, so each metric is stored as a native typed field.
 
 ---
 
@@ -191,7 +174,7 @@ A one-shot utility to wipe all records from a specific InfluxDB measurement. Use
 
 **Fields per measurement:**
 - `chiller_v2`: temp, ambient, count
-- `booster_v2`: current, power, count
+- `booster_v2`: count, current, power, temp, pressure
 - `dispenser_v2`: count, duration, water, syrup, total, syrupRemaining
 
 **Example line protocol entry:**
@@ -210,28 +193,15 @@ export INFLUX_TOKEN="your_influxdb_token_here"
 # Activate the virtual environment
 source /path/to/CapstoneEnv/bin/activate
 
-# Run the active receiver
-python3 pi-gateway/LoRaReceiver_InfluxSender_Updated.py
+# Run the receiver
+python3 pi-gateway/LoRaReceiver_InfluxSender.py
 ```
 
 ---
 
-## Payload Format
+## Running the Dashboard
 
-**Dispenser Node** (prefix `D:`):
-```
-D:count=3,duration=1240,syrup=0.620,water=3.100,total=3.720
-```
-
-**Chiller Node** (prefix `C:`):
-```
-C:temp=4.23,ambient=22.15,count=7
-```
-
-**Booster Node** (prefix `B:`):
-```
-B:current=1.82,power=21.84,count=104
-```
+The React dashboard and its Node.js/Express API live in `dashboard/`. The API reads its InfluxDB settings from environment variables (`INFLUX_URL`, `INFLUX_TOKEN`, `INFLUX_ORG`, `INFLUX_BUCKET`, and the three measurement names). See [`dashboard/README.md`](dashboard/README.md) for setup.
 
 ---
 
@@ -246,8 +216,6 @@ B:current=1.82,power=21.84,count=104
 | Adafruit GFX | Dependency of Adafruit SSD1306 |
 | Adafruit MCP9600 | chillerTransmitter |
 | SparkFun Qwiic Button | DispenserTransmissionTest1 |
-| HT_SSD1306Wire | Dev sketches (Heltec internal OLED) |
-| LoRaWan_APP | HelloWorld sketches only |
 
 ### Python (Pi gateway)
 
@@ -279,8 +247,8 @@ Target board: **Heltec WiFi LoRa 32 V3**
 - [x] MCP9600 temperature reading with 5-sample smoothing
 - [x] LoRa TX from Chiller Node (RadioLib)
 - [x] Booster Node firmware (ACS723 current sensing + power derivation)
-- [x] Pi bare receiver working (chillerReceiver.py)
-- [x] Pi InfluxDB writer working (LoRaReceiver_InfluxSender_Updated.py)
+- [x] Pi bare receiver working
+- [x] Pi InfluxDB writer working (LoRaReceiver_InfluxSender.py)
 - [x] Node.js + Express backend with REST API
 - [x] React dashboard with Manager View and Technical View
 - [x] End-to-end integration confirmed
@@ -293,5 +261,5 @@ Alexander Lain · Roxana Perez Gonzalez · **Karim Abdelfattah** · Nathan Coffe
 
 University of Louisville, J.B. Speed School of Engineering — CSE 596 Capstone, Spring 2026
 
-**Karim Abdelfattah** — Embedded firmware, Dispenser Node, Chiller Node, Pi gateway scripts
+**Karim Abdelfattah** — Embedded firmware, Dispenser Node, Booster Node, Pi gateway scripts
 [LinkedIn](https://www.linkedin.com/in/karimabdelfattah7)
